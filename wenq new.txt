@@ -1,0 +1,820 @@
+QUESTION 1: add new product
+
+
+import React, { useContext } from "react";
+import { CartContext } from "./CartContext";
+
+function Buy() {
+  const { addToCart } = useContext(CartContext);
+
+  const products = [
+    {
+      name: "Classic White Shirt",
+      price: "₹1,299",
+      image:
+        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      name: "Denim Jacket",
+      price: "₹1,999",
+      image:
+        "https://images.unsplash.com/photo-1542060748-10c28b62716f?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      name: "Vintage Wool Jacket",
+      price: "₹2,499",
+      image:
+        "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80"
+    },
+
+    // CHANGE START: New Product Added
+    {
+      name: "Premium Cotton Kurta",
+      price: "₹1,599",
+      image:
+        "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80"
+    }
+    // CHANGE END
+  ];
+
+  return (
+    <section className="container">
+      <h2>Available Pieces</h2>
+      <p className="section-subtext">
+        Add items to your cart to see total cost.
+      </p>
+
+      <div className="card-grid">
+        {products.map((item, index) => (
+          <div className="card" key={index}>
+            <img src={item.image} alt={item.name} />
+            <h3>{item.name}</h3>
+            <p>{item.price}</p>
+            <button
+              className="btn"
+              onClick={() => {
+                addToCart(item);
+                alert(`${item.name} added to cart`);
+              }}
+            >
+              Add to Cart
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+export default Buy;
+
+
+
+
+
+
+
+QUESTION 2: add to top
+
+
+/* CHANGE START: Styling Updated */
+
+/* ===== PROGRAM 2 : UI MODIFICATION ===== */
+
+body {
+  font-family: "Georgia", serif;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.6)
+    ),
+    url("https://images.unsplash.com/photo-1490481651871-ab68de25d43d");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #111;
+}
+
+/* Change button style */
+.btn {
+  border: 1px solid #111;
+  padding: 10px 22px;
+  letter-spacing: 2px;
+}
+
+
+
+
+
+
+
+
+
+QUESTION 3:Feedback form validation (email + mobile number).
+
+add to contact js
+
+import React, { useState } from "react";
+
+function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [message, setMessage] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  // CHANGE START – Email & Mobile Validation
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobilePattern = /^[0-9]{10}$/;
+
+    if (!emailPattern.test(email)) {
+      alert("Invalid Email");
+      return;
+    }
+
+    if (!mobilePattern.test(mobile)) {
+      alert("Mobile must be 10 digits");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, mobile, message })
+      });
+
+      if (response.ok) {
+        setName("");
+        setEmail("");
+        setMobile("");
+        setMessage("");
+        setShowThankYou(true);
+      }
+    } catch {
+      alert("Server error");
+    }
+  };
+  // CHANGE END
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>Contact Velouré Atelier</h1>
+
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <input style={styles.input} placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} required />
+        <input style={styles.input} placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
+        <input style={styles.input} placeholder="Mobile Number" value={mobile} onChange={(e)=>setMobile(e.target.value)} required />
+        <textarea style={styles.textarea} placeholder="Message" value={message} onChange={(e)=>setMessage(e.target.value)} required />
+        <button style={styles.button}>Send</button>
+      </form>
+
+      {showThankYou && <p>Thank you for your message!</p>}
+    </div>
+  );
+}
+
+const styles = { /* same as before */ };
+
+export default Contact;
+
+
+
+
+
+
+
+
+
+
+
+QUESTION 4: already present
+
+import React, { useState } from "react";
+
+function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          message
+        })
+      });
+
+      const result = await response.text();
+      console.log(result);
+
+      if (response.ok) {
+        setName("");
+        setEmail("");
+        setMessage("");
+        setShowThankYou(true);
+      } else {
+        alert("Failed to send message");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Server not reachable");
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>Contact Velouré Atelier</h1>
+
+      <p style={styles.text}>
+        Use the form below to sell garments, apply for careers, or send inquiries.
+      </p>
+
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <input
+          style={styles.input}
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+
+        <input
+          style={styles.input}
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+
+        <textarea
+          style={styles.textarea}
+          placeholder="Your message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          required
+        />
+
+        <button style={styles.button} type="submit">
+          Send Message
+        </button>
+      </form>
+
+      {showThankYou && (
+        <p style={{ marginTop: "20px", color: "#333" }}>
+          Thank you for your message!
+        </p>
+      )}
+    </div>
+  );
+}
+
+const styles = {
+  container: {
+    padding: "60px 40px",
+    maxWidth: "700px",
+    margin: "0 auto"
+  },
+  title: {
+    fontFamily: "serif",
+    fontSize: "32px",
+    marginBottom: "15px"
+  },
+  text: {
+    fontSize: "16px",
+    marginBottom: "25px",
+    color: "#444"
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px"
+  },
+  input: {
+    padding: "12px",
+    fontSize: "15px"
+  },
+  textarea: {
+    padding: "12px",
+    fontSize: "15px",
+    minHeight: "120px"
+  },
+  button: {
+    padding: "12px",
+    fontSize: "16px",
+    cursor: "pointer",
+    border: "1px solid #333",
+    backgroundColor: "#fff"
+  }
+};
+
+export default Contact;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+QUESTION 5: REPLACE HOME.js with this
+
+
+
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+function Home() {
+  const navigate = useNavigate();
+
+  // CHANGE START: State for hide/show section
+  const [showMotto, setShowMotto] = useState(true);
+  // CHANGE END
+
+  return (
+    <>
+      <section className="hero">
+        <h1>Velouré Atelier</h1>
+        <p className="hero-text">
+          Curated thrift fashion for those who value quality, restraint, and
+          timeless design.
+        </p>
+
+        <div className="button-group">
+          <button className="btn primary" onClick={() => navigate("/buy")}>
+            Buy Clothes
+          </button>
+          <button className="btn" onClick={() => navigate("/contact")}>
+            Sell Clothes
+          </button>
+        </div>
+      </section>
+
+      {/* CHANGE START: Toggle Button */}
+      <div style={{ textAlign: "center", marginTop: "40px" }}>
+        <button
+          className="btn primary"
+          onClick={() => setShowMotto(!showMotto)}
+        >
+          {showMotto ? "Hide Motto" : "Show Motto"}
+        </button>
+      </div>
+      {/* CHANGE END */}
+
+      {/* CHANGE START: Section hide/show */}
+      {showMotto && (
+        <section className="container">
+          <div className="info-card">
+            <h2>Our Motto</h2>
+            <p>
+              We believe clothing should not be rushed, wasted, or forgotten.
+              Every garment deserves care, continuity, and a second life.
+              Velouré Atelier exists to slow fashion down — thoughtfully.
+            </p>
+          </div>
+        </section>
+      )}
+      {/* CHANGE END */}
+    </>
+  );
+}
+
+export default Home;
+
+
+
+
+
+
+
+
+
+QUESTION 6: APPLY DISCOUNT
+1️⃣ CartContext.js (FULL FILE)
+
+Replace it completely:
+
+import React, { createContext, useState } from "react";
+
+export const CartContext = createContext();
+
+export function CartProvider({ children }) {
+  const [cart, setCart] = useState([]);
+
+  const addToCart = (item) => {
+    setCart((prev) => {
+      const found = prev.find(p => p.name === item.name);
+      if (found) {
+        return prev.map(p =>
+          p.name === item.name ? { ...p, quantity: p.quantity + 1 } : p
+        );
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  };
+
+  // CHANGE START – Discount logic with flag
+  const getTotal = () => {
+    const total = cart.reduce((sum, item) => {
+      const price = parseInt(item.price.replace("₹", "").replace(",", ""));
+      return sum + price * item.quantity;
+    }, 0);
+
+    return total > 1000 ? total * 0.9 : total;
+  };
+
+  const isDiscountApplied = () => {
+    const total = cart.reduce((sum, item) => {
+      const price = parseInt(item.price.replace("₹", "").replace(",", ""));
+      return sum + price * item.quantity;
+    }, 0);
+
+    return total > 1000;
+  };
+  // CHANGE END
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, getTotal, isDiscountApplied }}>
+      {children}
+    </CartContext.Provider>
+  );
+}
+
+
+
+2️⃣ Cart.js (FULL FILE)
+
+Replace it completely:
+
+import React, { useContext } from "react";
+import { CartContext } from "./CartContext";
+
+function Cart() {
+  const { cart, getTotal, isDiscountApplied } = useContext(CartContext);
+
+  return (
+    <section className="container">
+      <div className="info-card">
+        <h2>Your Cart</h2>
+
+        {cart.length === 0 ? (
+          <p>Your cart is empty.</p>
+        ) : (
+          <>
+            {cart.map((item, index) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: "14px",
+                  borderBottom: "1px solid #ddd",
+                  paddingBottom: "10px"
+                }}
+              >
+                <span>
+                  {item.name} × {item.quantity}
+                </span>
+                <span>{item.price}</span>
+              </div>
+            ))}
+
+            <hr style={{ margin: "20px 0" }} />
+
+            {/* CHANGE START – Discount Message */}
+            {isDiscountApplied() && (
+              <p style={{ color: "green", fontWeight: "bold" }}>
+                10% Discount Applied!
+              </p>
+            )}
+            {/* CHANGE END */}
+
+            <h3>Total: ₹{getTotal().toLocaleString()}</h3>
+
+            <div style={{ marginTop: "30px", textAlign: "center" }}>
+              <button
+                className="btn primary"
+                onClick={() =>
+                  alert("Checkout not implemented. This is a cart simulation.")
+                }
+              >
+                Proceed to Buy
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
+export default Cart;
+
+
+
+
+
+
+
+
+
+
+
+QUESTION 7: At end and already present
+
+
+
+QUESTION 8: in about.js add
+
+import React from "react";
+
+function About() {
+  return (
+    <div style={styles.container}>
+      <h1 style={styles.title}>About Velouré Atelier</h1>
+
+      <p style={styles.text}>
+        Velouré Atelier is a family-run thrift fashion initiative focused on
+        giving quality garments a second life.
+      </p>
+
+      {/* CHANGE START – New Year / Christmas Offer Section */}
+      <div style={styles.offerBox}>
+        <h2 style={styles.offerTitle}>Christmas & New Year Special Offers</h2>
+        <p style={styles.offerText}>
+          Enjoy up to 25% off on selected premium thrift collections this festive
+          season. Celebrate sustainability with style and savings.
+        </p>
+      </div>
+      {/* CHANGE END */}
+    </div>
+  );
+}
+
+const styles = {
+  container: { padding: "60px 40px", maxWidth: "800px", margin: "0 auto" },
+  title: { fontSize: "32px", marginBottom: "20px" },
+  text: { fontSize: "16px", marginBottom: "15px" },
+
+  // CHANGE START – Internal CSS for new section
+  offerBox: {
+    marginTop: "40px",
+    padding: "25px",
+    border: "1px solid #333",
+    backgroundColor: "#fff5f5"
+  },
+  offerTitle: {
+    fontSize: "22px",
+    marginBottom: "10px"
+  },
+  offerText: {
+    fontSize: "15px",
+    color: "#444"
+  }
+  // CHANGE END
+};
+
+export default About;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+q7:
+
+File: frontend/src/Contact.js
+
+import React, { useState } from "react";
+
+function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [message, setMessage] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobilePattern = /^[0-9]{10}$/;
+
+    if (!emailPattern.test(email)) {
+      alert("Invalid Email");
+      return;
+    }
+
+    if (!mobilePattern.test(mobile)) {
+      alert("Mobile must be 10 digits");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, mobile, message })
+      });
+
+      if (response.ok) {
+        setName("");
+        setEmail("");
+        setMobile("");
+        setMessage("");
+        setShowThankYou(true);
+      } else {
+        alert("Failed to save feedback");
+      }
+    } catch {
+      alert("Server not reachable");
+    }
+  };
+
+  return (
+    <div style={styles.container}>
+      <h1>Contact Velouré Atelier</h1>
+
+      <form onSubmit={handleSubmit}>
+        <input placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} required />
+        <input placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
+        <input placeholder="Mobile" value={mobile} onChange={(e)=>setMobile(e.target.value)} required />
+        <textarea placeholder="Message" value={message} onChange={(e)=>setMessage(e.target.value)} required />
+        <button type="submit">Send</button>
+      </form>
+
+      {showThankYou && <p>Thank you for your feedback!</p>}
+    </div>
+  );
+}
+
+const styles = {
+  container: { padding: "40px" }
+};
+
+export default Contact;
+
+
+
+//backend 
+
+
+//File: backend/server.js (or index.js)
+
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs");
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+// Q7 CHANGE START – Save feedback
+app.post("/contact", (req, res) => {
+  const data = req.body;
+
+  fs.appendFile("feedback.txt", JSON.stringify(data) + "\n", (err) => {
+    if (err) return res.status(500).send("Error saving data");
+    res.send("Feedback Saved Successfully");
+  });
+});
+// Q7 CHANGE END
+
+app.listen(5000, () => {
+  console.log("Server running on port 5000");
+});
+
+
+
+
+
+
+
+
+
+
+
+separate feedback
+
+
+
+
+
+
+import React, { useState } from "react";
+
+function Feedback() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const mobilePattern = /^[0-9]{10}$/;
+
+    if (!emailPattern.test(email)) {
+      alert("Invalid Email");
+      return;
+    }
+
+    if (!mobilePattern.test(mobile)) {
+      alert("Mobile must be 10 digits");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, mobile, feedback })
+      });
+
+      if (res.ok) {
+        setName("");
+        setEmail("");
+        setMobile("");
+        setFeedback("");
+        setSubmitted(true);
+      } else {
+        alert("Failed to submit feedback");
+      }
+    } catch {
+      alert("Server not reachable");
+    }
+  };
+
+  return (
+    <div className="container">
+      <div className="info-card">
+        <h2>Feedback</h2>
+
+        <form onSubmit={handleSubmit}>
+          <input placeholder="Name" value={name} onChange={(e)=>setName(e.target.value)} required />
+          <input placeholder="Email" value={email} onChange={(e)=>setEmail(e.target.value)} required />
+          <input placeholder="Mobile Number" value={mobile} onChange={(e)=>setMobile(e.target.value)} required />
+          <textarea placeholder="Your Feedback" value={feedback} onChange={(e)=>setFeedback(e.target.value)} required />
+          <button className="btn primary">Submit Feedback</button>
+        </form>
+
+        {submitted && <p style={{marginTop:"15px"}}>Thank you for your feedback!</p>}
+      </div>
+    </div>
+  );
+}
+
+export default Feedback;
